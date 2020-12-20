@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'package:hello_word_flutter/screens/storeView.dart';
+import 'package:hello_word_flutter/screens/favoriteView.dart';
+import 'package:hello_word_flutter/screens/couponView.dart';
+import 'package:hello_word_flutter/screens/shoppingBasketView.dart';
+import 'package:hello_word_flutter/screens/myView.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,88 +11,84 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Startup Name generator',
-      theme: ThemeData(
-        primaryColor: Colors.white,
-      ),
-      home: RandomWords(),
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(),
     );
   }
 }
 
-class RandomWordsState extends State<RandomWords> {
+class MyHomePage extends StatefulWidget {
   @override
-  final _suggestions = <WordPair>[];
-  final _saved = Set<WordPair>();
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-  void _pushSaved() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      final tiles = _saved.map((WordPair pair) {
-        return ListTile(
-            title: Text(
-          pair.asCamelCase,
-          style: _biggerFont,
-        ));
-      });
-      final divided =
-          ListTile.divideTiles(context: context, tiles: tiles).toList();
-      return Scaffold(
-          appBar: AppBar(title: Text('saved Suggestions')),
-          body: ListView(
-            children: divided,
-          ));
-    }));
-  }
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
+class _MyHomePageState extends State<MyHomePage> {
+  int _pageIndex = 0;
+  final List<Widget> _children = [
+    StoreView(),
+    FavoriteView(),
+    CouponView(),
+    ShoppingBasketView(),
+    MyView(),
+  ];
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('startup name generator'),
-          actions: [IconButton(icon: Icon(Icons.list), onPressed: _pushSaved)]),
-      body: _buildSuggestions(),
-    );
-  }
-
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
-
-          final index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
+        title: Text('appBar'),
+        centerTitle: true,
+        elevation: 6,
       ),
-      trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
+      body: _children[_pageIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (value) {
+          setState(() {
+            _pageIndex = value;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _pageIndex,
+        selectedItemColor: Colors.pink,
+        unselectedItemColor: Colors.black,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.storefront), label: '매장보기'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: '좋아요'),
+          BottomNavigationBarItem(icon: Icon(Icons.tag), label: '쿠폰'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.local_grocery_store_outlined),
+              label: '장바구니'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'My'),
+        ],
       ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class HomePage extends StatelessWidget {
   @override
-  RandomWordsState createState() => RandomWordsState();
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        _pageOfTop(), // 상단
+        _pageOfMiddle(), // 중단
+        _pageOfBottom(), // 하단
+      ],
+    );
+  }
+}
+
+Widget _pageOfTop() {
+  return Text('_pageOfTop');
+}
+
+Widget _pageOfMiddle() {
+  return Text('_pageOfMiddle');
+}
+
+Widget _pageOfBottom() {
+  return Text('_pageOfBottom');
 }
